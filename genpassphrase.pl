@@ -1,8 +1,11 @@
 #!/usr/bin/perl -w
-# produce random passphrase from dict, using /dev/random.
+# produce random passphrase from dictionnary, using /dev/random.
+# Copyright (C) 2013 Félix Hauri - www.F-Hauri.ch - passphrase.pl@f-hauri.ch
+# This program is covered by the GNU General Public License version 3: GPLv3
+# http://www.gnu.org/licenses/gpl-3.0.html
 use vars qw(%VERSION $DEBUG $IO_CONSTANTS);
 ($VERSION{"name"},$VERSION{"number"},$VERSION{"date"},$VERSION{"user"})=
-  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.1.1.1 2013-04-08 11:41:11 felix Exp $ ' =~
+  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.3 2013-05-12 10:43:14 felix Exp $ ' =~
     /Id:\s(.+),v\s([0-9a-z.-]+)\s([0-9\/-]+\s[0-9:]+)\s([a-z0-9_-]+)\sExp/;#CV
 
 use strict;
@@ -53,6 +56,11 @@ $numLines,$wrdByLines,$bitIdx,$dict,$minLen,$maxLen,$rndDev;
 };
 syntax if $opt{'h'};
 
+die "Min ($minLen) could not be bigger than max ($maxLen)" if $minLen > $maxLen;
+die "Number of line to generate could not be 0" unless $numLines;
+die "Number of words by phrase to generate could not be 0" unless $wrdByLines;
+die "Entropy bits could not be 0" unless $bitIdx;
+
 sub shannonEntropy {
     $_ = $_[0]; my ($H,%ltrs)=(0);
     s/(.)/$ltrs{$1}++;"."/eg;
@@ -60,8 +68,11 @@ sub shannonEntropy {
     		     $H -= $p * log($p); };
     return $H / log(2);
 }
+sub flatEntropy {
+   return length($_[0])*log(26)/log(2);
+}
 
-open my $fh, "<".$dict or die;
+open my $fh, "<".$dict or die "Can't open dictionnary '$dict'";
 my %uword;
 map { chomp;$uword{$_}++ } grep { /^[a-z]{$minLen,$maxLen}$/ } <$fh>;
 close $fh;
@@ -73,6 +84,11 @@ while (scalar @words > 2**$bitIdx) {
     splice @words, $rndIdx, 1 if $words[$rndIdx]=~/s$/ || int(rand()*3)==2;
 }
 
+if (2**$bitIdx > $firstBunch) {
+    $bitIdx=int(log($firstBunch)/log(2));
+    print "Warning: Bunch of ".$firstBunch." words too small! Entropy bits dropped down to ".$bitIdx." bits index.\n";
+};
+
 printf "With %d words over %d ( %6d entropy bits ) = 1/%e -> %d bits.\n",
     $wrdByLines,2**$bitIdx,$bitIdx,2**($wrdByLines*$bitIdx),$wrdByLines*$bitIdx;
 
@@ -80,12 +96,6 @@ printf "With %d words from %d ( %6.3f entropy bits ) = 1/%e -> %.3f bits.\n",
     $wrdByLines,$firstBunch,log($firstBunch)/log(2),
     2**(log($firstBunch)/log(2)*$wrdByLines),
     $wrdByLines*log($firstBunch)/log(2);
-
-if (2**$bitIdx > $firstBunch) {
-    print STDERR $progname.": ERROR: Bunch of ".$firstBunch.
-	" words too small for ".$bitIdx." bits index.\n";
-    exit 1;
-};
 
 open $fh, "<".$rndDev or die;
 $_='';
@@ -99,6 +109,6 @@ s/([01]{$bitIdx})/push @out,$words[unpack("s",pack("b$packBits",$1))];""/eg;
 
 foreach my $i ( 0 .. $numLines-1 ) {
     my @lne=@out[ $wrdByLines * $i .. $wrdByLines * $i + $wrdByLines -1 ];
-    printf "%7.3f\t".join(" ","%-12s"x$wrdByLines)."\n",
-	     shannonEntropy(join "", @lne ) ,@lne;
+    printf "%7.3f %7.3f\t".join(" ","%-12s"x$wrdByLines)."\n",
+	     shannonEntropy(join "", @lne ) , flatEntropy(join "", @lne ) ,@lne;
 };
