@@ -1,13 +1,13 @@
 genpassphrase
 =============
 
-Take clean word from dictionary to build random pass phrase with fixed entropy
+This pass phrase generator take clean words from dictionary to build random phrases and compute entropy.
 
-In the following of the idea found at: http://xkcd.com/936/
+Follow the idea found at: http://xkcd.com/936/
 
-There is a perl script that take a `dictionary` file,
-create a uniq clean (with only lower letters from `a` to `z`) words list
-and take randoms words to build a pass phrase.
+It is a perl script that take a `dictionary` file,
+create a uniq cleaned words list (with only flat lower letters from `a` to `z`)
+take randoms words and compute entropy.
 
 Syntaxe:
 --------
