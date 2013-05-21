@@ -5,13 +5,13 @@
 # http://www.gnu.org/licenses/gpl-3.0.html
 use vars qw(%VERSION $DEBUG $IO_CONSTANTS);
 ($VERSION{"name"},$VERSION{"number"},$VERSION{"date"},$VERSION{"user"})=
-  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.3 2013-05-12 10:43:14 felix Exp $ ' =~
+  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.4 2013-05-21 13:23:16 felix Exp $ ' =~
     /Id:\s(.+),v\s([0-9a-z.-]+)\s([0-9\/-]+\s[0-9:]+)\s([a-z0-9_-]+)\sExp/;#CV
 
 use strict;
 use Getopt::Std;
 my %opt;
-getopt('dairlew',\%opt );
+getopt('dairlews',\%opt );
 
 my $dict="/usr/share/dict/american-english";
 my ($minLen,$maxLen)=(4,11);
@@ -20,7 +20,8 @@ my $rndDev="/dev/urandom";
 my $numLines=1;
 my $bitIdx=15;
 my $wrdByLines=5;
-
+ 
+my @words;
 (my $progname=$0) =~ s/^.*[\/]//g;
 
 $numLines=$1 if $ARGV[0] && $ARGV[0]=~/^(\d+)$/;
@@ -38,7 +39,7 @@ my $rndBits=int( $numLines * $wrdByLines * $bitIdx / 8 )+
 
 sub syntax {
     printf STDOUT <<eof
-Usage: %s [-h] [-d dict file] [-i mIn length] [-a mAx length]
+Usage: %s [-h] [-d dict file] [-s outputfile] [-i mIn length] [-a mAx length]
    [-e entropy bits] [-r random file] [-w words] [-l lines] [lines]
 Version: %s v%s - (%s).
     -h           This help.
@@ -46,6 +47,7 @@ Version: %s v%s - (%s).
     -w num       number of words by phrase  (default: %s)
     -e bits      Entropy bits for each words (default: %s)
     -d filename  Dictionary file (default: %s)
+    -s filename  Dict file to save after initial drop (default: none)
     -i length    Minimal word length (default: %s)
     -a length    Maximal word length (default: %s)
     -r device    Random file or generator (default: %s)
@@ -71,12 +73,21 @@ sub shannonEntropy {
 sub flatEntropy {
    return length($_[0])*log(26)/log(2);
 }
+sub writeDict {
+    if (-e $opt{'s'}) {
+	printf "Overwrite existing file '%s' (N/y)? ",$opt{'s'};
+	return unless <> =~ /^y/i;
+    };
+    open my $sh,">".$opt{'s'} or die "Can't write do '".$opt{'s'}."'.";
+    map { printf $sh "%s\n", $_ } @words;
+    close $sh;
+};
 
 open my $fh, "<".$dict or die "Can't open dictionnary '$dict'";
 my %uword;
 map { chomp;$uword{$_}++ } grep { /^[a-z]{$minLen,$maxLen}$/ } <$fh>;
 close $fh;
-my @words=keys %uword;
+@words=keys %uword;
 my $firstBunch=scalar @words;
 
 while (scalar @words > 2**$bitIdx) {
@@ -88,6 +99,8 @@ if (2**$bitIdx > $firstBunch) {
     $bitIdx=int(log($firstBunch)/log(2));
     print "Warning: Bunch of ".$firstBunch." words too small! Entropy bits dropped down to ".$bitIdx." bits index.\n";
 };
+
+writeDict if defined $opt{'s'};
 
 printf "With %d words over %d ( %6d entropy bits ) = 1/%e -> %d bits.\n",
     $wrdByLines,2**$bitIdx,$bitIdx,2**($wrdByLines*$bitIdx),$wrdByLines*$bitIdx;
