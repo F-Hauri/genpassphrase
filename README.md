@@ -20,6 +20,7 @@ Usage: passphrase.pl [-h] [-d dict file] [-i mIn length] [-a mAx length]
     -w num       number of words by phrase  (default: 5)
     -e bits      Entropy bits for each words (default: 15)
     -d filename  Dictionary file (defaul /usr/share/dict/american-english)
+    -s filename  Dict file to save after initial drop (default: none)
     -i length    Minimal word length (default: 4)
     -a length    Maximal word length (default: 11)
     -r device    Random file or generator (default: /dev/urandom)
