@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Genpassphrase by F-Hauri</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Genpassphrase</h1>
+        <h2>Take clean word from dictionary to build random pass phrase with fixed entropy</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/F-Hauri/genpassphrase/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/F-Hauri/genpassphrase/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/F-Hauri/genpassphrase" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>genpassphrase</h1>
+
+<p>This pass phrase generator take clean words from dictionary to build random phrases and compute entropy.</p>
+
+<p>Follow the idea found at: <a href="http://xkcd.com/936/">http://xkcd.com/936/</a></p>
+
+<p>It is a perl script that take a <code>dictionary</code> file,
+create a uniq cleaned words list (with only flat lower letters from <code>a</code> to <code>z</code>)
+take randoms words and compute entropy.</p>
+
+<h2>Syntaxe:</h2>
+
+<pre>
+Usage: passphrase.pl [-h] [-d dict file] [-i mIn length] [-a mAx length]
+   [-e entropy bits] [-r random file] [-w words] [-l lines] [lines]
+   
+    -h           This help.
+    -l num       number of phrases to generate  (default: 1)
+    -w num       number of words by phrase  (default: 5)
+    -e bits      Entropy bits for each words (default: 15)
+    -d filename  Dictionary file (defaul /usr/share/dict/american-english)
+    -s filename  Dict file to save after initial drop (default: none)
+    -i length    Minimal word length (default: 4)
+    -a length    Maximal word length (default: 11)
+    -r device    Random file or generator (default: /dev/urandom)
+</pre>
+
+<h2>Output sample:</h2>
+
+<pre>
+$ ./passphrase.pl -l 4
+With 5 words over 32768 (     15 entropy bits ) = 1/3.777893e+22 -&gt; 75 bits.
+With 5 words from 56947 ( 15.797 entropy bits ) = 1/5.988999e+23 -&gt; 78.987 bits.
+  3.634 192.718 airfoils    desolated   babysitting hits        digresses   
+  3.391 173.916 acidic      parents     scary       trespassed  fascinate   
+  3.704 164.515 occluded    rarely      sweatier    metallic    squat       
+  3.907 192.718 available   stockpiling blazoning   jaywalk     chino       
+</pre>
+
+<p>Explanation: There are 56947 word (15.79bits) containing 4 to 11 letters in /usr/share/dict/american-english,
+after randomly dropped this down to 32768 (round to 15 bits entropy), building lines of 5 random words,
+compute shannon's entropy and flat entropy, for each lines and printout.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
