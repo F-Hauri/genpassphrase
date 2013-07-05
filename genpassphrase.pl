@@ -5,7 +5,7 @@
 # http://www.gnu.org/licenses/gpl-3.0.html
 use vars qw(%VERSION $DEBUG $IO_CONSTANTS);
 ($VERSION{"name"},$VERSION{"number"},$VERSION{"date"},$VERSION{"user"})=
-  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.4 2013-05-21 13:23:16 felix Exp $ ' =~
+  ($1,$2,$3,$4) if '$Id: passphrase.pl,v 1.5.1.2 2013-07-05 08:51:52 felix Exp $ ' =~
     /Id:\s(.+),v\s([0-9a-z.-]+)\s([0-9\/-]+\s[0-9:]+)\s([a-z0-9_-]+)\sExp/;#CV
 
 use strict;
@@ -39,8 +39,9 @@ my $rndBits=int( $numLines * $wrdByLines * $bitIdx / 8 )+
 
 sub syntax {
     printf STDOUT <<eof
-Usage: %s [-h] [-d dict file] [-s outputfile] [-i mIn length] [-a mAx length]
-   [-e entropy bits] [-r random file] [-w words] [-l lines] [lines]
+Usage: %s [-h] [-q] [-d dict file] [-s outputfile]
+   [-i mIn length] [-a mAx length] [-e entropy bits] [-r random file]
+   [-w words] [-l lines] [lines]
 Version: %s v%s - (%s).
     -h           This help.
     -l num       number of phrases to generate  (default: %s)
@@ -51,6 +52,7 @@ Version: %s v%s - (%s).
     -i length    Minimal word length (default: %s)
     -a length    Maximal word length (default: %s)
     -r device    Random file or generator (default: %s)
+    -q           Quietly generate lines without computations.
 eof
 ,$progname,$VERSION{'name'},$VERSION{'number'},$VERSION{'date'},
 $numLines,$wrdByLines,$bitIdx,$dict,$minLen,$maxLen,$rndDev;
@@ -75,7 +77,7 @@ sub flatEntropy {
 }
 sub writeDict {
     if (-e $opt{'s'}) {
-	printf "Overwrite existing file '%s' (N/y)? ",$opt{'s'};
+	printf STDERR "Overwrite existing file '%s' (N/y)? ",$opt{'s'};
 	return unless <> =~ /^y/i;
     };
     open my $sh,">".$opt{'s'} or die "Can't write do '".$opt{'s'}."'.";
@@ -83,7 +85,7 @@ sub writeDict {
     close $sh;
 };
 
-open my $fh, "<".$dict or die "Can't open dictionnary '$dict'";
+open my $fh, "<".$dict or die "Can't open dictionary '$dict'";
 my %uword;
 map { chomp;$uword{$_}++ } grep { /^[a-z]{$minLen,$maxLen}$/ } <$fh>;
 close $fh;
@@ -97,18 +99,20 @@ while (scalar @words > 2**$bitIdx) {
 
 if (2**$bitIdx > $firstBunch) {
     $bitIdx=int(log($firstBunch)/log(2));
-    print "Warning: Bunch of ".$firstBunch." words too small! Entropy bits dropped down to ".$bitIdx." bits index.\n";
+    print STDERR "Warning: Bunch of ".$firstBunch." words too small! Entropy bits dropped down to ".$bitIdx." bits index.\n";
 };
 
 writeDict if defined $opt{'s'};
 
 printf "With %d words over %d ( %6d entropy bits ) = 1/%e -> %d bits.\n",
-    $wrdByLines,2**$bitIdx,$bitIdx,2**($wrdByLines*$bitIdx),$wrdByLines*$bitIdx;
+    $wrdByLines,2**$bitIdx,$bitIdx,2**($wrdByLines*$bitIdx),$wrdByLines*$bitIdx
+    unless $opt{'q'};
 
 printf "With %d words from %d ( %6.3f entropy bits ) = 1/%e -> %.3f bits.\n",
     $wrdByLines,$firstBunch,log($firstBunch)/log(2),
     2**(log($firstBunch)/log(2)*$wrdByLines),
-    $wrdByLines*log($firstBunch)/log(2);
+    $wrdByLines*log($firstBunch)/log(2)
+    unless $opt{'q'};
 
 open $fh, "<".$rndDev or die;
 $_='';
@@ -122,6 +126,10 @@ s/([01]{$bitIdx})/push @out,$words[unpack("s",pack("b$packBits",$1))];""/eg;
 
 foreach my $i ( 0 .. $numLines-1 ) {
     my @lne=@out[ $wrdByLines * $i .. $wrdByLines * $i + $wrdByLines -1 ];
-    printf "%7.3f %7.3f\t".join(" ","%-12s"x$wrdByLines)."\n",
-	     shannonEntropy(join "", @lne ) , flatEntropy(join "", @lne ) ,@lne;
+    if ($opt{'q'}) {
+	print join(" ",@lne)."\n";
+    } else {
+	printf "%7.3f %7.3f\t".join(" ","%-12s"x$wrdByLines)."\n",
+	    shannonEntropy(join "", @lne ) , flatEntropy(join "", @lne ) ,@lne;
+    };
 };
