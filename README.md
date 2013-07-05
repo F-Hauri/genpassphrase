@@ -12,18 +12,20 @@ take randoms words and compute entropy.
 Syntaxe:
 --------
 <pre>
-Usage: passphrase.pl [-h] [-d dict file] [-i mIn length] [-a mAx length]
-   [-e entropy bits] [-r random file] [-w words] [-l lines] [lines]
-   
+Usage: genpassphrase.pl [-h] [-q] [-d dict file] [-s outputfile]
+   [-i mIn length] [-a mAx length] [-e entropy bits] [-r random file]
+   [-w words] [-l lines] [lines]
+
     -h           This help.
     -l num       number of phrases to generate  (default: 1)
     -w num       number of words by phrase  (default: 5)
     -e bits      Entropy bits for each words (default: 15)
-    -d filename  Dictionary file (defaul /usr/share/dict/american-english)
+    -d filename  Dictionary file (default: /usr/share/dict/american-english)
     -s filename  Dict file to save after initial drop (default: none)
     -i length    Minimal word length (default: 4)
     -a length    Maximal word length (default: 11)
     -r device    Random file or generator (default: /dev/urandom)
+    -q           Quietly generate lines without computations.
 </pre>
 
 Output sample:
@@ -41,3 +43,9 @@ With 5 words from 56947 ( 15.797 entropy bits ) = 1/5.988999e+23 -> 78.987 bits.
 Explanation: There are 56947 word (15.79bits) containing 4 to 11 letters in /usr/share/dict/american-english,
 after randomly dropped this down to 32768 (round to 15 bits entropy), building lines of 5 random words,
 compute shannon's entropy and flat entropy, for each lines and printout.
+
+Or simply:
+<pre>
+$ ./genpassphrase.pl -q
+firmly predeceased titanium slobbered betrayers
+</pre>
