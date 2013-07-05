@@ -12,10 +12,10 @@ take randoms words and compute entropy.
 Syntaxe:
 --------
 <pre>
-Usage: genpassphrase.pl [-h] [-q] [-d dict file] [-s outputfile]
+Usage: passphrase.pl [-h] [-q] [-d dict file] [-s outputfile]
    [-i mIn length] [-a mAx length] [-e entropy bits] [-r random file]
    [-w words] [-l lines] [lines]
-
+Version: passphrase.pl v1.5.1.2 - (2013-07-05 08:51:52).
     -h           This help.
     -l num       number of phrases to generate  (default: 1)
     -w num       number of words by phrase  (default: 5)
