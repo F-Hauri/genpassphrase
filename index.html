@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Genpassphrase : Take clean word from dictionary to build random pass phrase with fixed entropy" />
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Genpassphrase by F-Hauri</title>
+    <title>Genpassphrase</title>
   </head>
 
   <body>
 
-    <header>
-      <div class="container">
-        <h1>Genpassphrase</h1>
-        <h2>Take clean word from dictionary to build random pass phrase with fixed entropy</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/F-Hauri/genpassphrase">View on GitHub</a>
 
-        <section id="downloads">
-          <a href="https://github.com/F-Hauri/genpassphrase/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/F-Hauri/genpassphrase/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/F-Hauri/genpassphrase" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+          <h1 id="project_title">Genpassphrase</h1>
+          <h2 id="project_tagline">Take clean word from dictionary to build random pass phrase with fixed entropy</h2>
 
-    <div class="container">
-      <section id="main_content">
-        <h1>genpassphrase</h1>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/F-Hauri/genpassphrase/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/F-Hauri/genpassphrase/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="genpassphrase" class="anchor" href="#genpassphrase"><span class="octicon octicon-link"></span></a>genpassphrase</h1>
 
 <p>This pass phrase generator take clean words from dictionary to build random phrases and compute entropy.</p>
 
@@ -38,24 +42,28 @@
 create a uniq cleaned words list (with only flat lower letters from <code>a</code> to <code>z</code>)
 take randoms words and compute entropy.</p>
 
-<h2>Syntaxe:</h2>
+<h2>
+<a name="syntaxe" class="anchor" href="#syntaxe"><span class="octicon octicon-link"></span></a>Syntaxe:</h2>
 
 <pre>
-Usage: passphrase.pl [-h] [-d dict file] [-i mIn length] [-a mAx length]
-   [-e entropy bits] [-r random file] [-w words] [-l lines] [lines]
-   
+Usage: passphrase.pl [-h] [-q] [-d dict file] [-s outputfile]
+   [-i mIn length] [-a mAx length] [-e entropy bits] [-r random file]
+   [-w words] [-l lines] [lines]
+Version: passphrase.pl v1.5.1.2 - (2013-07-05 08:51:52).
     -h           This help.
     -l num       number of phrases to generate  (default: 1)
     -w num       number of words by phrase  (default: 5)
     -e bits      Entropy bits for each words (default: 15)
-    -d filename  Dictionary file (defaul /usr/share/dict/american-english)
+    -d filename  Dictionary file (default: /usr/share/dict/american-english)
     -s filename  Dict file to save after initial drop (default: none)
     -i length    Minimal word length (default: 4)
     -a length    Maximal word length (default: 11)
     -r device    Random file or generator (default: /dev/urandom)
+    -q           Quietly generate lines without computations.
 </pre>
 
-<h2>Output sample:</h2>
+<h2>
+<a name="output-sample" class="anchor" href="#output-sample"><span class="octicon octicon-link"></span></a>Output sample:</h2>
 
 <pre>
 $ ./passphrase.pl -l 4
@@ -70,9 +78,25 @@ With 5 words from 56947 ( 15.797 entropy bits ) = 1/5.988999e+23 -&gt; 78.987 bi
 <p>Explanation: There are 56947 word (15.79bits) containing 4 to 11 letters in /usr/share/dict/american-english,
 after randomly dropped this down to 32768 (round to 15 bits entropy), building lines of 5 random words,
 compute shannon's entropy and flat entropy, for each lines and printout.</p>
+
+<p>Or simply:</p>
+
+<pre>
+$ ./genpassphrase.pl -q
+firmly predeceased titanium slobbered betrayers
+</pre>
       </section>
     </div>
 
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Genpassphrase maintained by <a href="https://github.com/F-Hauri">F-Hauri</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
