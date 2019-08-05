@@ -1,6 +1,14 @@
 genpassphrase
 =============
 
+Copying:
+--------
+
+This stuff is distrubuted under GNU GPL v3.0 or later license.
+
+Introduction:
+-------------
+
 This pass phrase generator take clean words from dictionary to build random phrases and compute entropy.
 
 Follow the idea found at: http://xkcd.com/936/
